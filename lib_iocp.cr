@@ -2,9 +2,6 @@ require "c/winnt"
 
 @[Link("advapi32")]
 lib LibC
-  WSA_IO_PENDING = 997;
-
-  type WINSOCK = UInt64
 
   alias LPWSAOVERLAPPED_COMPLETION_ROUTINE = Void*
 
