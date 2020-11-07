@@ -2,8 +2,10 @@ require "c/winnt"
 
 @[Link("advapi32")]
 lib LibC
+  WSA_IO_PENDING = 997;
 
   type WINSOCK = UInt64
+
   alias LPWSAOVERLAPPED_COMPLETION_ROUTINE = Void*
 
   struct WSABUF
@@ -26,7 +28,6 @@ lib LibC
     dwNumberOfBytesTransferred : DWORD
   end
 
-
   fun WSARecv(
     socket : WINSOCK, 
     lpBuffers : WSABUF*, 
@@ -37,6 +38,8 @@ lib LibC
     lpCompletionRoutine : LPWSAOVERLAPPED_COMPLETION_ROUTINE
   ) : Int32
 
+  fun WSAGetLastError() : Int32
+    
   fun CreateIoCompletionPort(
     fileHandle : HANDLE, 
     existingCompletionPort : HANDLE, 
