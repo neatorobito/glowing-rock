@@ -3,6 +3,9 @@ require "c/winnt"
 @[Link("advapi32")]
 lib LibC
 
+  type WINSOCK = UInt64
+  alias LPWSAOVERLAPPED_COMPLETION_ROUTINE = Void*
+
   struct WSABUF
     len : ULong
     buf : CHAR*
@@ -16,14 +19,13 @@ lib LibC
     hEvent : HANDLE
   end
 
-  alias WINSOCK = ULONG_PTR
-  alias LPWSAOVERLAPPED_COMPLETION_ROUTINE = Void*
+  struct OVERLAPPED_ENTRY
+    lpCompletionKey : ULONG_PTR
+    lpOverlapped : WSAOVERLAPPED*
+    internal : ULONG_PTR
+    dwNumberOfBytesTransferred : DWORD
+  end
 
-  fun CreateIoCompletionPort(
-    fileHandle : HANDLE, 
-    existingCompletionPort : HANDLE, 
-    completionKey : ULONG_PTR, 
-    numberOfConcurrentThreads : DWORD) : HANDLE
 
   fun WSARecv(
     socket : WINSOCK, 
@@ -32,7 +34,37 @@ lib LibC
     lpNumberOfBytesRecvd : DWORD*,
     lpFlags : DWORD*, 
     lpOverlapped : WSAOVERLAPPED*,
-    lpCompletionRoutine : LPWSAOVERLAPPED_COMPLETION_ROUTINE) : Int32
+    lpCompletionRoutine : LPWSAOVERLAPPED_COMPLETION_ROUTINE
+  ) : Int32
 
+  fun CreateIoCompletionPort(
+    fileHandle : HANDLE, 
+    existingCompletionPort : HANDLE, 
+    completionKey : ULONG_PTR, 
+    numberOfConcurrentThreads : DWORD
+  ) : HANDLE
+
+  fun PostQueuedCompletionStatus(
+    completionPort : HANDLE,
+    dwNumberofBytesTransferred : DWORD,
+    dwCompletionKey : ULONG_PTR,
+    lpOverlapped : WSOVERLAPPED*
+  )
+
+  fun GetQueuedCompletionStatus(
+    completionPort : HANDLE,
+    lpNumberOfBytesTransferred : DWORD*,
+    lpCompletionKey : ULONG_PTR,
+    lpOverlapped : WSAOVERLAPPED*,
+  ) : BOOL
+
+  fun GetQueuedCompletionStatusEx(
+    completionPort : HANDLE,
+    lpCompletionPortEntries : Slice(OVERLAPPED_ENTRY),
+    ulCount : ULONG,
+    ulNumEntriesRemoved : ULONG_PTR,
+    dwMilliseconds : DWORD,
+    fAlertable : BOOL
+    ) : BOOL
 
 end
