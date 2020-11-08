@@ -15,27 +15,25 @@ else
   puts "WinSock Version: #{wsaData.wVersion}"
 end
 
-client = Socket.new(Socket::Family::INET, Socket::Type::STREAM, Socket::Protocol::TCP, false)
-client.connect("localhost", 53540)
-client << "Hello from Windows!\n"
-response = client.gets
-client.close
+# client = Socket.new(Socket::Family::INET, Socket::Type::STREAM, Socket::Protocol::TCP, false)
+# client.connect("localhost", 53540)
+# client << "Hello from Windows!\n"
+# response = client.gets
+# client.close
 
 # client = TCPSocket.new("localhost", 53540)
 # client << "Hello again!\n"
 # response = client.gets
 # client.close
 
-# require "socket"
+def handle_client(client)
+  message = client.gets
+  client.puts message
+end
 
-# def handle_client(client)
-#   message = client.gets
-#   client.puts message
-# end
-
-# server = TCPServer.new("localhost", 1234)
-# while client = server.accept?
-#   spawn handle_client(client)
-# end
+server = TCPServer.new("localhost", 1234)
+while client = server.accept?
+  spawn handle_client(client)
+end
 
 LibC.WSACleanup()
