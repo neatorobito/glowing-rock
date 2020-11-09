@@ -1,1 +1,4 @@
 .crystal/
+.vscode/
+*.exe
+*.obj
