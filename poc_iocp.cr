@@ -6,7 +6,7 @@ require "c/sys/utime"
 require "c/sys/stat"
 require "c/winbase"
 
-r = Random.new# => 112705036
+r = Random.new
 comp_key = r.next_u
 # puts "Completion Key: #{comp_key}"
 
