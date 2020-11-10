@@ -35,5 +35,9 @@ int main()
     std::cout << "AF_INET6 : " << AF_INET6 << "\n";
     std::cout << "AF_UNIX : " << AF_UNIX << "\n";
     std::cout << "AF_UNSPEC : " << AF_UNSPEC << "\n";
+
+    std::cout << "GENERIC_READ : " << GENERIC_READ << "\n";
+    std::cout << "GENERIC_WRITE : " << GENERIC_WRITE << "\n";
+
     return 0;
 }
