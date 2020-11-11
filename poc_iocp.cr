@@ -1,10 +1,10 @@
-require "./lib_iocp"
 require "c/io"
 require "c/fcntl"
 require "c/fileapi"
 require "c/sys/utime"
 require "c/sys/stat"
 require "c/winbase"
+require "c/iocp"
 require "./lib_windbg"
 
 r = Random.new
@@ -51,9 +51,5 @@ if LibC.CreateIoCompletionPort(test_file_hnd, io_port, comp_key, 0) != LibC::INV
 end
 
 if LibC.CloseHandle(test_file_hnd) == 0
-  raise RuntimeError.from_winerror("CloseHandle")
-end
-
-if LibC.CloseHandle(io_port) == 0
   raise RuntimeError.from_winerror("CloseHandle")
 end

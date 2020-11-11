@@ -1,19 +1,24 @@
 require "c/winnt"
 
-# Based on the WSAOVERLAPPED structure, see https://docs.microsoft.com/en-us/windows/win32/api/winsock2/ns-winsock2-wsaoverlapped
+# Based on the WSAOVERLAPPED structure
+# See https://docs.microsoft.com/en-us/windows/win32/api/winsock2/ns-winsock2-wsaoverlapped
 @[Extern]
 struct AsyncOperation
-  property token : Int32
+  property internal : LibC::ULONG_PTR
+  property internalHigh : LibC::ULONG_PTR
+  property offset : LibC::DWORD
+  property offsetHigh : LibC::DWORD
+  property hEvent : LibC::HANDLE
+  property extraInfo : Int32
 
   def initialize()
-    token = 0
+    @internal = 0
+    @internalHigh = 0
+    @offset = 0
+    @offsetHigh = 0
+    @hEvent = LibC::HANDLE.null
+    @extraInfo = 0
   end
-
-  internal : LibC::ULONG_PTR
-  internalHigh : LibC::ULONG_PTR
-  offset : LibC::DWORD
-  offsetHigh : LibC::DWORD
-  hEvent : LibC::HANDLE
 end
 
 @[Link("advapi32")]
