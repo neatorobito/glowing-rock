@@ -33,7 +33,7 @@ puts WinError.new(LibC.GetLastError)
 if LibC.CreateIoCompletionPort(test_file_hnd, io_port, comp_key, 0) != LibC::INVALID_HANDLE_VALUE
 
   3.times do 
-    ol = LibC::WSAOVERLAPPED.new
+    ol = AsyncOperation.new
     fake_data = r.base64((1024) ** 2).to_slice
     puts LibC.WriteFile(test_file_hnd, fake_data, fake_data.bytesize, out written, pointerof(ol))
     puts WinError.new(LibC.GetLastError)
@@ -43,7 +43,7 @@ if LibC.CreateIoCompletionPort(test_file_hnd, io_port, comp_key, 0) != LibC::INV
   # get_status = LibC.GetQueuedCompletionStatus(io_port, out bytes_trnsfred, out completed, pointerof(ol), LibC::INFINITE)
   get_status = LibC.GetQueuedCompletionStatusEx(io_port, entries, 3, out removed, LibC::INFINITE, false)
 
-  puts entries
+  puts entries[1].lpOverlapped.value
 
   puts "GetQueuedCompletionStatus : #{get_status}"
   puts WinError.new(LibC.GetLastError)

@@ -1,29 +1,36 @@
 require "c/winnt"
 
+# Based on the WSAOVERLAPPED structure, see https://docs.microsoft.com/en-us/windows/win32/api/winsock2/ns-winsock2-wsaoverlapped
+@[Extern]
+struct AsyncOperation
+  property token : Int32
+
+  def initialize()
+    token = 0
+  end
+
+  internal : LibC::ULONG_PTR
+  internalHigh : LibC::ULONG_PTR
+  offset : LibC::DWORD
+  offsetHigh : LibC::DWORD
+  hEvent : LibC::HANDLE
+end
+
 @[Link("advapi32")]
 lib LibC
 
   type WINSOCK = Int32
 
   alias LPWSAOVERLAPPED_COMPLETION_ROUTINE = Void*
-  # TODO Resolve this in the standard library.
 
   struct WSABUF
     len : ULong
     buf : CHAR*
   end
 
-  struct WSAOVERLAPPED
-    internal : ULONG_PTR
-    internalHigh : ULONG_PTR
-    offset : DWORD
-    offsetHigh : DWORD
-    hEvent : HANDLE
-  end
-
   struct OVERLAPPED_ENTRY
     lpCompletionKey : ULONG_PTR
-    lpOverlapped : WSAOVERLAPPED*
+    lpOverlapped : AsyncOperation*
     internal : ULONG_PTR
     dwNumberOfBytesTransferred : DWORD
   end
@@ -33,7 +40,7 @@ lib LibC
     lpBuffer : Void*,
     nNumberOfBytesToWrite : DWORD,
     lpNumberOfBytesWritten : DWORD*,
-    lpOverlapped : WSAOVERLAPPED*
+    lpOverlapped : AsyncOperation*
   ) : BOOL
 
   fun WSARecv(
@@ -42,7 +49,7 @@ lib LibC
     dwBufferCount : DWORD, 
     lpNumberOfBytesRecvd : DWORD*,
     lpFlags : DWORD*, 
-    lpOverlapped : WSAOVERLAPPED*,
+    lpOverlapped : AsyncOperation*,
     lpCompletionRoutine : LPWSAOVERLAPPED_COMPLETION_ROUTINE
   ) : Int
 
@@ -59,14 +66,14 @@ lib LibC
     completionPort : HANDLE,
     dwNumberofBytesTransferred : DWORD,
     dwCompletionKey : ULONG_PTR,
-    lpOverlapped : WSAOVERLAPPED *
+    lpOverlapped : AsyncOperation*
   )
 
   fun GetQueuedCompletionStatus(
     completionPort : HANDLE,
     lpNumberOfBytesTransferred : DWORD*,
     lpCompletionKey : ULONG_PTR*,
-    lpOverlapped : WSAOVERLAPPED*,
+    lpOverlapped : AsyncOperation*,
     dwMilliseconds : DWORD,
   ) : BOOL
 
