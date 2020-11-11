@@ -72,9 +72,9 @@ lib LibC
 
   fun GetQueuedCompletionStatusEx(
     completionPort : HANDLE,
-    lpCompletionPortEntries : OVERLAPPED_ENTRY**,
+    lpCompletionPortEntries : OVERLAPPED_ENTRY*,
     ulCount : ULong,
-    ulNumEntriesRemoved : ULONG_PTR*,
+    ulNumEntriesRemoved : ULong*,
     dwMilliseconds : DWORD,
     fAlertable : BOOL
     ) : BOOL

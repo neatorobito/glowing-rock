@@ -5,6 +5,7 @@ require "c/fileapi"
 require "c/sys/utime"
 require "c/sys/stat"
 require "c/winbase"
+require "./lib_windbg"
 
 r = Random.new
 comp_key = r.next_u
@@ -33,13 +34,16 @@ if LibC.CreateIoCompletionPort(test_file_hnd, io_port, comp_key, 0) != LibC::INV
 
   3.times do 
     ol = LibC::WSAOVERLAPPED.new
-    fake_data = r.base64((4096) ** 2).to_slice
+    fake_data = r.base64((1024) ** 2).to_slice
     puts LibC.WriteFile(test_file_hnd, fake_data, fake_data.bytesize, out written, pointerof(ol))
     puts WinError.new(LibC.GetLastError)
-  end 
+  end
 
+  entries = Slice.new(3, LibC::OVERLAPPED_ENTRY.new)
   # get_status = LibC.GetQueuedCompletionStatus(io_port, out bytes_trnsfred, out completed, pointerof(ol), LibC::INFINITE)
-    get_status = LibC.GetQueuedCompletionStatusEx(io_port, out entries, 3, out removed, LibC::INFINITE, false)
+  get_status = LibC.GetQueuedCompletionStatusEx(io_port, entries, 3, out removed, LibC::INFINITE, false)
+
+  puts entries
 
   puts "GetQueuedCompletionStatus : #{get_status}"
   puts WinError.new(LibC.GetLastError)
